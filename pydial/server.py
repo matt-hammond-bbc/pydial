@@ -143,9 +143,10 @@ class SSDPServer(SocketServer.UDPServer):
           }
           self.announcer = None
 
-     def start(self):
+     def start(self, advertiseServices=[]):
          if not self.announcer:
               self.announcer = SSDPAnnouncerThread(self)
+              self.announcer.advertisments.extend(advertiseServices)
               self.announcer.start()
 
               self.serve_forever()          
