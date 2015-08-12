@@ -74,15 +74,16 @@ class SSDPHandler(SocketServer.BaseRequestHandler):
           else:
                dial_search = False
                for line in data[1:]:
-                    field, val = line.split(':', 1)
-                    if field.strip() == 'ST' and val.strip() == SSDP_ST:
-                         dial_search = True
-                    elif field.strip() == 'MX':
-                         try:
-                              self.max_backoff = int(val.strip())
-                         except ValueError:
-                              # Use default
-                              pass
+                    if ':' in line:
+                        field, val = line.split(':', 1)
+                        if field.strip() == 'ST' and val.strip() == SSDP_ST:
+                             dial_search = True
+                        elif field.strip() == 'MX':
+                             try:
+                                  self.max_backoff = int(val.strip())
+                             except ValueError:
+                                  # Use default
+                                  pass
                if dial_search:
                     self._send_reply()
 
