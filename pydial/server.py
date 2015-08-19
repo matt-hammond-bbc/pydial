@@ -110,6 +110,7 @@ class SSDPServer(SocketServer.UDPServer):
      Parameters:
           -device_url: Absolute URL of the device being advertised.
           -host: host/IP address to listen on
+          -usn: set to override the default usn ("uuid:" + a uuid)
 
      The following attributes are set by default, but should be
      changed if you want to use this class as the basis for a 
@@ -123,7 +124,7 @@ class SSDPServer(SocketServer.UDPServer):
           Defaults to 1800.
      uuid - UUID. By default created from the NIC via uuid.uuid1()
      """
-     def __init__(self, device_url, host=''):
+     def __init__(self, device_url, host='', usn=None):
           SocketServer.UDPServer.__init__(self, (host, SSDP_PORT), 
                     SSDPHandler, False)
           self.allow_reuse_address = True
@@ -133,6 +134,8 @@ class SSDPServer(SocketServer.UDPServer):
           self.socket.setsockopt(socket.IPPROTO_IP, 
                     socket.IP_ADD_MEMBERSHIP, mreq)
           self.socket.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
+          if usn is None:
+              usn = "uuid:"+str(uuid.uuid1())
           self.fields = {
               "ddd_url"         : device_url,
               "product_name"    : PRODUCT,
@@ -140,7 +143,7 @@ class SSDPServer(SocketServer.UDPServer):
               "os_name"         : platform.system(),
               "os_version"      : platform.release(),
               "max_age"         : CACHE_DEFAULT,
-              "usn"             : "uuid:"+str(uuid.uuid1()),
+              "usn"             : usn,
           }
           self.announcer = None
 
